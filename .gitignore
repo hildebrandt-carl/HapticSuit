@@ -133,3 +133,8 @@ dmypy.json
 devel/
 build/
 .catkin_tools
+
+
+/Experiments
+.catkin_workspace
+*/logs

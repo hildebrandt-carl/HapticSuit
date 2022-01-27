@@ -1,0 +1,14 @@
+<launch>
+
+  <include file="$(find flight_controller)/launch/freyja_controller.launch">
+    <arg name="use_waypoint_handler"  value="true"/>
+    <arg name="vicon_topic"           value="/vicon/JOZI/JOZI"/>
+    <arg name="total_mass"            value="1.7"/>
+    <arg name="thrust_scaler"         value="80"/>
+    <arg name="bias_compensation"     value="auto"/>
+  </include>
+
+  <node name="tester_node" pkg="flight_controller" type="fly.py" output="screen">
+  </node> 
+
+</launch>
