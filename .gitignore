@@ -135,6 +135,6 @@ build/
 .catkin_tools
 
 
-/Experiments
+/experiment_data
 .catkin_workspace
 */logs
