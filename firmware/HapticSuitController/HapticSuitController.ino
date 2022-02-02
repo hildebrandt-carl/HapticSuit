@@ -21,6 +21,8 @@
 #define UDP_PORT 8888
 // Define the gear ratio of (1:150) ~70RPM
 #define PPR 1050
+// Define the looping frequency (HZ)
+#define LOOP_RATE 100
 
 // Define the wifi status
 int status = WL_IDLE_STATUS;
@@ -38,7 +40,6 @@ Servo esc_array[NUMBER_ARMS];
 int   motor_angle[NUMBER_ARMS]    = {0,0};
 int   motor_throttle[NUMBER_ARMS] = {0,0};
 
-
 // Create the IMU (imu1 goes to 0x4B, imu2 goes to 0x4A)
 BNO080 imu_array[NUMBER_ARMS];
 
@@ -49,27 +50,27 @@ float global_roll[NUMBER_ARMS];
 int   roll_state[NUMBER_ARMS];
 
 // Declare the pins
-const int pwm[] = {5,  11};
-const int in1[] = {12, 14};
-const int in2[] = {6,  13};
+const int pwn_pin[] = {5,  11};
+const int rotation_control_pin1[] = {12, 14};
+const int rotation_control_pin2[] = {6,  13};
 
-// Globals
-long previous_time = 0; // prevT
+// Get the loop rate
+const float dt = 1.0 / LOOP_RATE;
 
 // PID class instances
-SimplePID pid[NUMBER_ARMS];
+PID pid[NUMBER_ARMS];
 
 // Define setup
 void setup()
 {
   // Allow time for startup
-  delay(5000);
+  delay(1000);
 
   // Configure communication
   Serial.begin(115200);
 
   // Start the setup
-  delay(100);
+  delay(5000);
   Serial.println();
   Serial.println("Program Setup Starting");
 
@@ -96,7 +97,7 @@ void setup()
       while (1)
       {
         Serial.println("WiFi shield not present");
-        delay(1000);
+        delay(10);
       }
     }
 
@@ -136,11 +137,11 @@ void setup()
     esc_array[k].write(0);
 
     // Set the different pins
-    pinMode(pwm[k],OUTPUT);
-    pinMode(in1[k],OUTPUT);
-    pinMode(in2[k],OUTPUT);
+    pinMode(pwn_pin[k],OUTPUT);
+    pinMode(rotation_control_pin1[k],OUTPUT);
+    pinMode(rotation_control_pin2[k],OUTPUT);
   }
-  delay(100);
+  delay(10);
 
 
   // Set the different pins to control the motors
@@ -148,16 +149,16 @@ void setup()
   for(int k = 0; k < NUMBER_ARMS; k++)
   {
     // Set the different PID paramters
-    pid[0].setParams(4, 0.072, 0, 0, 255);
-    pid[1].setParams(2, 0.036, 0, 0, 255);
+    pid[0].set_parameters(5, 0, 0, dt);
+    pid[1].set_parameters(5, 0, 0, dt);
   }
-  delay(100);
+  delay(10);
 
   //Increase I2C data rate to 400kHz
   Serial.println("Increasing I2C rate");
   Wire.begin();
   Wire.setClock(400000);
-  delay(100);
+  delay(10);
 
   // Start the IMU sensors
   Serial.println("Connecting to IMUs");
@@ -165,10 +166,10 @@ void setup()
   int imu_address = IMU_START_ADDRESS;
   for(int k = 0; k < NUMBER_ARMS; k++)
   {
-    delay(1000);
+    delay(10);
     imu_success[k] = imu_array[k].begin(imu_address);
     imu_address = imu_address -1;
-    delay(1000);
+    delay(10);
   }
 
   // Check the IMU was a success
@@ -193,7 +194,7 @@ void setup()
   for(int k = 0; k < NUMBER_ARMS; k++)
   {
     imu_array[k].enableRotationVector(5);
-    delay(100); 
+    delay(10); 
   }
 
   // Print finished
@@ -202,6 +203,9 @@ void setup()
 
 void loop()
 {
+
+  // Start the loop timer
+  long start_time = micros();
 
   // If wifi is available - Check if there is a UDP packet
   if (ENABLE_WIFI)
@@ -225,10 +229,10 @@ void loop()
       Serial.println("Contents:");
       Serial.println(packetBuffer);
 
-      char *t1 = subStr(packetBuffer, 1);
-      char *t2 = subStr(packetBuffer, 2);
-      char *m1 = subStr(packetBuffer, 3);
-      char *m2 = subStr(packetBuffer, 4);
+      char *t1 = sub_str(packetBuffer, 1);
+      char *t2 = sub_str(packetBuffer, 2);
+      char *m1 = sub_str(packetBuffer, 3);
+      char *m2 = sub_str(packetBuffer, 4);
 
       Serial.println("Values:");
       Serial.println(t1);
@@ -267,35 +271,57 @@ void loop()
       // Update the previous roll
       previous_roll[k] = current_roll[k];
     }
-    Serial.println(String("IMU") + String(k) + " reading: " + String(global_roll[k], 2));
   }
-  Serial.println("---------------------");
 
-  // // Set a target position
-  // float target[NMOTORS];
-  // for(int k=0; k<NMOTORS; k++)
-  // {
-  //   target[k] = map (motor_angle[k], 0, 180, 0, PPR) - map (current_roll[k], 0, 180, 0, PPR);
-  // }
+  // Question 1: Set Motor what are the parameters?
+  // Question 2: What is the minimum and maximum motor values
+  // Question 3: The motors seem to rotate a different speeds given the same power
 
-  // // Get the time difference
-  // long currT = micros();
-  // float deltaT = ((float) (currT - previous_time))/( 1.0e6 );
-  // previous_time = currT;
+  // Get the setpoints
+  float roll_setpoint[NUMBER_ARMS] = {30, -30};
 
-  // // Loop through the motors
-  // for(int k = 0; k < NMOTORS; k++)
-  // {
-  //   int pwr, dir;
-  //   // Evaluate the control signal
-  //   pid[k].evalu(target[k],deltaT,pwr,dir);
-  //   // Signal the motor
-  //   setMotor(dir,pwr,pwm[k],in1[k],in2[k]);
-  // }
+  // Loop through the motors
+  for(int k = 0; k < NUMBER_ARMS; k++)
+  {
+    // Compute the roll output
+    float motor_power = pid[k].get_output(roll_setpoint[k], global_roll[k]);
 
+    // Get the sign of the motor_power
+    int motor_direction = (motor_power > 0) - (motor_power < 0);
+    motor_power = min(abs(motor_power), 250);
+
+    // Check if the motor power is less than a threshold
+    if (motor_power < 10)
+    {
+      motor_power = 0;
+    }
+
+    // Validate the safe rotation
+    if (!rotation_within_bounds(global_roll[k], motor_direction))
+    {
+      motor_power = 0;
+    }
+
+    // Signal the motor
+    set_motor(motor_direction, motor_power, pwn_pin[k], rotation_control_pin1[k], rotation_control_pin2[k]);
+
+    // Serial.println("Power" + String(k) + ": " + String(motor_power));
+    // Serial.println("Direction" + String(k) + ": " + String(motor_direction[k]));
+  }
+
+  // Sets the motor throttle
   // esc_1.write(motor_throttle[0]);
   // esc_2.write(motor_throttle[1]);
-  delay(1000);
+  
+  // Maintain the loop rate
+  while ((micros() - start_time) <= (dt * 1.0e6))
+  {
+    ;
+  }
+
+  Serial.println("Motor0: " + String(roll_setpoint[0]) + "/" + String(global_roll[0]) +
+                 "\nMotor1: " + String(roll_setpoint[1]) + "/" + String(global_roll[1]));
+  Serial.println("---------------------");
 }
 
 void printWiFiStatus() 
@@ -316,14 +342,17 @@ void printWiFiStatus()
   Serial.println(" dBm");
 }
 
-void setMotor(int dir, int pwmVal, int pwm, int in1, int in2)
+// Control the spinning motors
+// rotation_direction --> Direction motors spin in, either 1 or -1
+//pwm                 --> The pwm value sent to the motor (higher == rotate faster)
+void set_motor(int rotation_direction, int pwm, int pwn_pin, int in1, int in2)
 {
-  analogWrite(pwm,pwmVal);
-  if(dir == 1){
+  analogWrite(pwn_pin, pwm);
+  if(rotation_direction == 1){
     digitalWrite(in1, HIGH);
     digitalWrite(in2, LOW);
   }
-  else if(dir == -1){
+  else if(rotation_direction == -1){
     digitalWrite(in1, LOW);
     digitalWrite(in2, HIGH);
   }
@@ -334,7 +363,7 @@ void setMotor(int dir, int pwmVal, int pwm, int in1, int in2)
 }
 
 // Segment the strings
-char* subStr (char* input_string, int segment_number) 
+char* sub_str (char* input_string, int segment_number) 
 {
   char *act, *sub, *ptr;
   static char copy[100];
@@ -374,4 +403,19 @@ double update_global_roll(double cur_reading, double prev_reading, int* state)
   float global_roll = (current_state * 360) + cur_reading;
 
   return global_roll;
+}
+
+// Need to write a verify safety function here
+bool rotation_within_bounds(double current_roll, double current_direction)
+{
+  bool safe = true;
+  if ((current_roll < -90) and (current_direction <= -1))
+  {
+    safe = false;
+  }
+  if ((current_roll > 90) and (current_direction >= 1))
+  {
+    safe = false;
+  }
+  return safe;
 }
