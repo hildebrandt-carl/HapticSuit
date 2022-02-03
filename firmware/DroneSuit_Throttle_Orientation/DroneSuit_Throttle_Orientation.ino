@@ -302,6 +302,9 @@ void printWiFiStatus() {
   Serial.println(" dBm");
 }
 
+// pwm -> pin for outputting speed
+// in1 -> controls direction (high, low == clockwise); (low, high  == anticlockwise); (low, low  == stop)
+// in2 -> controls direction
 void setMotor(int dir, int pwmVal, int pwm, int in1, int in2){
   analogWrite(pwm,pwmVal);
   if(dir == 1){
