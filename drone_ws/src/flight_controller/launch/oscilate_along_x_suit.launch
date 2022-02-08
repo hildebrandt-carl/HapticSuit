@@ -2,9 +2,9 @@
 
   <include file="$(find flight_controller)/launch/freyja_controller.launch">
     <arg name="use_waypoint_handler"  value="true"/>
-    <arg name="vicon_topic"           value="/vicon/JOZI/JOZI"/>
-    <arg name="total_mass"            value="1.7"/>
-    <arg name="thrust_scaler"         value="80"/>
+    <arg name="vicon_topic"           value="/vicon/STARK/STARK"/>
+    <arg name="total_mass"            value="1.85"/>
+    <arg name="thrust_scaler"         value="70"/>
     <arg name="bias_compensation"     value="auto"/>
   </include>
 
