@@ -16,8 +16,8 @@
     <arg name="thrust_scaler"         value="100"/>
     <arg name="bias_compensation"     value="off"/>
   </include>
-
-  <node name="flight_path_node" pkg="flight_controller" type="hover_origin.py" output="screen">
+  
+  <node name="flight_path_node" pkg="flight_controller" type="hover_oval.py" output="screen">
     <param name="desired_height" type="double" value="1" />
   </node> 
 
