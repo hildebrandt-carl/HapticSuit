@@ -169,33 +169,32 @@ void setup()
 
   // Start the IMU sensors
   Serial.println("Connecting to IMUs");
-  bool imu_success[NUMBER_ARMS];
-  int imu_address = IMU_START_ADDRESS;
-  for(int k = 0; k < NUMBER_ARMS; k++)
-  {
-    delay(10);
-    imu_success[k] = imu_array[k].begin(imu_address);
-    imu_address = imu_address -1;
-    delay(10);
-  }
+  bool imu_success[NUMBER_ARMS] = {false, false};
 
-  // Check the IMU was a success
-  if ((imu_success[0] == false) or (imu_success[1] == false))
+  // Do this until connection is successful
+  while ((imu_success[0] == false) or (imu_success[1] == false))
   {
-    while (1)
+    // Connect to the IMU
+    int imu_address = IMU_START_ADDRESS;
+    for(int k = 0; k < NUMBER_ARMS; k++)
     {
-      if (imu_success[0] == false)
-      {
-        Serial.println("BNO080 not detected at 0x4B I2C address. Check your jumpers and the hookup guide. Freezing...");
-      }
-      if (imu_success[1] == false)
-      {
-        Serial.println("BNO080 not detected at 0x4A I2C address. Check your jumpers and the hookup guide. Freezing...");
-      }
-      delay(1000);
+      delay(100);
+      imu_success[k] = imu_array[k].begin(imu_address);
+      imu_address = imu_address -1;
+      delay(100);
     }
-  }
 
+    if (imu_success[0] == false)
+    {
+      Serial.println("BNO080 not detected at 0x4B I2C address. Check your jumpers and the hookup guide. Freezing...");
+    }
+    if (imu_success[1] == false)
+    {
+      Serial.println("BNO080 not detected at 0x4A I2C address. Check your jumpers and the hookup guide. Freezing...");
+    }
+    delay(1000);
+  }
+  
   Serial.println("Enabling rotation Vectors on IMUs");
   // Set IMU's update to 5ms
   for(int k = 0; k < NUMBER_ARMS; k++)
