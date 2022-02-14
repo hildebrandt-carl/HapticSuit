@@ -23,7 +23,7 @@ class FlightPathControllerNode:
         self.hover_height = height
 
         # Set the rate
-        self.rate = 4 #Hz
+        self.rate = 20 #Hz
         self.dt = 1.0 / self.rate
 
         # Init the drone and program state

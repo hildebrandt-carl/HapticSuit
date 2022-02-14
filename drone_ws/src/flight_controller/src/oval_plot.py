@@ -15,7 +15,7 @@ fig, ax = plt.subplots(1)
 plt.xlim(-2.5, 2.5)
 plt.ylim(-2.5, 2.5)
 
-ax.plot(x, y)
+ax.plot(y, x)
 plt.grid(linestyle='--')
 plt.title('Drone Path', fontsize=8)
 plt.show()
