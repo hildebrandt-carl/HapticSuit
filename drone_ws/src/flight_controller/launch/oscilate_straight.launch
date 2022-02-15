@@ -9,12 +9,12 @@
     <arg name="enable_flatness_ff"    value="false" />
     <arg name="use_examples"          value="false"/>
     <arg name="example_number"        value="0" />
-    <arg name="start_rosbag"          value="false" />
     <!-- Changed Settings -->
     <arg name="vicon_topic"           value="/vicon/JOZI/JOZI"/>
-    <arg name="total_mass"            value="1.2"/>
-    <arg name="thrust_scaler"         value="100"/>
-    <arg name="bias_compensation"     value="off"/>
+    <arg name="total_mass"            value="2.3"/>
+    <arg name="thrust_scaler"         value="115"/>
+    <arg name="bias_compensation"     value="false"/>
+    <arg name="start_rosbag"          value="false" />
   </include>
 
   <node name="flight_path_node" pkg="flight_controller" type="hover_straight_line.py" output="screen">

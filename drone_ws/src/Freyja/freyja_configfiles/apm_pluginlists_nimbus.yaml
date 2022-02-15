@@ -20,6 +20,7 @@ plugin_blacklist:
 - obstacle_distance
 - trajectory
 - param
+- geofence
 
 # extras
 - altitude
