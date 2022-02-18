@@ -8,7 +8,7 @@
     <arg name="use_velctrl_only"      value="false" />
     <arg name="enable_flatness_ff"    value="false" />
     <!-- Changed Settings -->
-    <arg name="vicon_topic"           value="/vicon/JOZI/JOZI"/>
+    <arg name="vicon_topic"           value="/vicon/SUIT/SUIT"/>
     <arg name="total_mass"            value="2.3"/>
     <arg name="thrust_scaler"         value="115"/>
     <arg name="bias_compensation"     value="auto"/>
