@@ -139,3 +139,4 @@ build/
 *.MOV
 .catkin_workspace
 */logs
+*.csv

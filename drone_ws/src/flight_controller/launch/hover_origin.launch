@@ -13,9 +13,9 @@
     <arg name="start_rosbag"          value="false" />
     <!-- Changed Settings -->
     <arg name="vicon_topic"           value="/vicon/SUIT/SUIT"/>
-    <arg name="total_mass"            value="2.3"/>
+    <arg name="total_mass"            value="2.8"/>
     <!-- <arg name="total_mass"            value="1.1"/> -->
-    <arg name="thrust_scaler"         value="115"/>
+    <arg name="thrust_scaler"         value="110"/>
   </include>
 
   <node name="flight_path_node" pkg="flight_controller" type="hover_origin.py" output="screen">
