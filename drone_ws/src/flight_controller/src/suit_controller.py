@@ -3,6 +3,7 @@
 import rospy
 import sys
 import time
+import socket
 import numpy as np
 
 from freyja_msgs.msg import WaypointTarget
@@ -18,14 +19,20 @@ class SuitController:
         # On shutdown do the following 
         rospy.on_shutdown(self.stop)
 
+        # Declare the socket variables
+        self.UDP_IP = "192.168.3.10"
+        self.UDP_PORT = 8888
+
         # Init the drone and program state
         self._quit = False
 
         # Set the rate
-        self.rate = 10.0
+        self.rate = 0.5
         self.dt = 1.0 / self.rate
 
-        self.current_throttle = 5
+        # Define the current throttle and angle
+        self.current_throttle   = [0, 0]
+        self.current_angle      = [180, -180]
 
         # Set the drone current position
         self.drone_pos = np.zeros(2)
@@ -58,41 +65,35 @@ class SuitController:
         self.current_waypoint[1] = msg.terminal_pn
 
     def _send_command(self, angle1, angle2, throttle1, throttle2):
-        self._log("Message sent: a1:{}  a2:{}  t1:{}  t2:{}".format(angle1, angle2, throttle1, throttle2))
+        # self._log("Sent: a1:{}  a2:{}  t1:{}  t2:{}".format(angle1, angle2, throttle1, throttle2))
+        print("Throttle: {}".format(throttle1))
         msg = Float64MultiArray()
         msg.data = [angle1, angle2, throttle1, throttle2] 
         self.suit_control_pub.publish(msg)
+        # Send the command over the socket
+        socket_msg = "{}, {}, {}, {}".format(angle1, angle2, throttle1, throttle2)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.sendto(socket_msg, (self.UDP_IP, self.UDP_PORT))
 
     def _mainloop(self):
         # Set the rate
         r = rospy.Rate(self.rate)
 
-        at_point = False
-
-        # Holds the distance readings
-        distance_window_filter = np.full(25, np.inf)
+        velocity_delta = 1
 
         # While we are running the program
         while not self._quit:
             
-            # Only if the current waypoint is not all zeros
-            if not np.all(self.current_waypoint==0):
-                # Compute distance to goal point
-                distance = np.linalg.norm(self.drone_pos - self.current_waypoint)
+            # Send the command
+            self._send_command(self.current_angle[0], self.current_angle[1], self.current_throttle[0], self.current_throttle[0])
 
-                # Save the distance
-                distance_window_filter = np.roll(distance_window_filter, 1)
-                distance_window_filter[0] = distance
-            
-                # If the distance is small, send a new throttle command:
-                if np.average(distance_window_filter) < 0.55:
-                    if not at_point:
-                        self._log("Arrived at goal")
-                        self._send_command(90,-90, self.current_throttle, self.current_throttle)
-                        self.current_throttle += 5
-                        at_point = True
-                else:
-                    at_point = False
+            self.current_throttle[0] += velocity_delta
+            self.current_throttle[1] += velocity_delta
+
+            if (self.current_throttle[0] < 0) or (self.current_throttle[0] >= 50):
+                self._log("Reset")
+                self.current_throttle[0] = 0
+                self.current_throttle[1] = 0
 
             # Mantain the rate
             r.sleep()
