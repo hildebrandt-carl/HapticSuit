@@ -6,6 +6,8 @@ import time
 import socket
 import numpy as np
 
+
+
 from freyja_msgs.msg import WaypointTarget
 from geometry_msgs.msg import TransformStamped
 from std_msgs.msg import Float64MultiArray
@@ -30,9 +32,13 @@ class SuitController:
         self.rate = 0.5
         self.dt = 1.0 / self.rate
 
+        # Get the desired throttle
+        throttle_param = rospy.get_param('/{}/desired_throttle'.format(rospy.get_name()), 0)
+
         # Define the current throttle and angle
-        self.current_throttle   = [0, 0]
-        self.current_angle      = [180, -180]
+        self.throttle   = [throttle_param, throttle_param]
+        self.angle      = [90, -90]
+        # self.angle      = [180, -180]
 
         # Set the drone current position
         self.drone_pos = np.zeros(2)
@@ -40,7 +46,7 @@ class SuitController:
 
         # Init all the publishers and subscribers
         self.waypoint_sub = rospy.Subscriber("/discrete_waypoint_target", WaypointTarget, callback=self._waypoint_callback)
-        self.drone_pos_sub = rospy.Subscriber("/vicon/STARK/STARK", TransformStamped, callback=self._GPS_callback)
+        self.drone_pos_sub = rospy.Subscriber("/vicon/SUIT/SUIT", TransformStamped, callback=self._GPS_callback)
         self.suit_control_pub = rospy.Publisher("/haptic_suit/control_signal", Float64MultiArray, queue_size=10)
         
         # Start the program
@@ -65,8 +71,7 @@ class SuitController:
         self.current_waypoint[1] = msg.terminal_pn
 
     def _send_command(self, angle1, angle2, throttle1, throttle2):
-        # self._log("Sent: a1:{}  a2:{}  t1:{}  t2:{}".format(angle1, angle2, throttle1, throttle2))
-        print("Throttle: {}".format(throttle1))
+        self._log("Sent: a1:{}  a2:{}  t1:{}  t2:{}".format(angle1, angle2, throttle1, throttle2))
         msg = Float64MultiArray()
         msg.data = [angle1, angle2, throttle1, throttle2] 
         self.suit_control_pub.publish(msg)
@@ -79,21 +84,11 @@ class SuitController:
         # Set the rate
         r = rospy.Rate(self.rate)
 
-        velocity_delta = 1
-
         # While we are running the program
         while not self._quit:
             
             # Send the command
-            self._send_command(self.current_angle[0], self.current_angle[1], self.current_throttle[0], self.current_throttle[0])
-
-            self.current_throttle[0] += velocity_delta
-            self.current_throttle[1] += velocity_delta
-
-            if (self.current_throttle[0] < 0) or (self.current_throttle[0] >= 50):
-                self._log("Reset")
-                self.current_throttle[0] = 0
-                self.current_throttle[1] = 0
+            self._send_command(self.angle[0], self.angle[1], self.throttle[0], self.throttle[1])
 
             # Mantain the rate
             r.sleep()

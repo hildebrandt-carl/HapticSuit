@@ -3,8 +3,7 @@
   <include file="$(find flight_controller)/launch/freyja_controller.launch">
     <!-- Default Settings -->
     <arg name="autopilot"             value="arducopter" />
-    <arg name="comm_port"             value="/dev/ttyUSB0:57600"/>
-    <arg name="use_waypoint_handler"  value="false" />
+    <arg name="comm_port"             value="/dev/ttyUSB0:115200"/>
     <arg name="use_velctrl_only"      value="false" />
     <arg name="enable_flatness_ff"    value="false" />
     <arg name="use_examples"          value="false"/>
@@ -12,14 +11,23 @@
     <arg name="bias_compensation"     value="auto"/>
     <arg name="start_rosbag"          value="false" />
     <!-- Changed Settings -->
-    <arg name="vicon_topic"           value="/vicon/JOZI/JOZI"/>
-    <arg name="total_mass"            value="2.5"/>
-    <!-- <arg name="total_mass"            value="1.2"/> -->
+    <arg name="vicon_topic"           value="/vicon/SUIT/SUIT"/>
+    <arg name="total_mass"            value="2.8"/>
+    <!-- <arg name="total_mass"            value="1.1"/> -->
     <arg name="thrust_scaler"         value="110"/>
+    <arg name="use_waypoint_handler"  value="true" />
   </include>
 
   <node name="flight_path_node" pkg="flight_controller" type="hover_straight_line.py" output="screen">
-    <param name="desired_height" type="double" value="1" />
+    <param name="waiting_time" type="double" value="20" />   
+  </node> 
+
+  
+  <node name="suit_controller" pkg="flight_controller" type="suit_controller_pendulum.py" output="screen">
+    <!-- Weight -->
+    <!-- <param name="desired_throttle" type="double" value="15" /> -->
+    <!-- <param name="desired_throttle" type="double" value="21" /> -->
+    <param name="desired_throttle" type="double" value="27" /> 
   </node> 
 
 </launch>

@@ -3,7 +3,7 @@
   <include file="$(find flight_controller)/launch/freyja_controller.launch">
     <!-- Default Settings -->
     <arg name="autopilot"             value="arducopter" />
-    <arg name="comm_port"             value="/dev/ttyUSB0:57600"/>
+    <arg name="comm_port"             value="/dev/ttyUSB0:115200"/>
     <arg name="use_waypoint_handler"  value="false" />
     <arg name="use_velctrl_only"      value="false" />
     <arg name="enable_flatness_ff"    value="false" />
@@ -20,6 +20,20 @@
 
   <node name="flight_path_node" pkg="flight_controller" type="hover_origin.py" output="screen">
     <param name="desired_height" type="double" value="1" />
+  </node> 
+
+  <!-- <node name="suit_controller" pkg="flight_controller" type="suit_controller_stable.py" output="screen"> -->
+    <!-- Weight -->
+    <!-- <param name="desired_throttle" type="double" value="15" /> -->
+    <!-- <param name="desired_throttle" type="double" value="21" /> -->
+    <!-- <param name="desired_throttle" type="double" value="27" /> -->
+    <!-- Wind -->
+    <!-- <param name="desired_throttle" type="double" value="5" /> -->
+    <!-- <param name="desired_throttle" type="double" value="10" /> -->
+    <!-- <param name="desired_throttle" type="double" value="15" /> -->
+  <!-- </node>  -->
+
+    <node name="suit_controller" pkg="flight_controller" type="suit_controller_varied.py" output="screen">
   </node> 
 
 </launch>

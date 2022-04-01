@@ -12,7 +12,7 @@
   <arg name="vicon_topic" />
 
   <!-- use "device:baudrate" for apm, "device" for asctec -->
-  <arg name="comm_port"                 default="/dev/ttyUSB0:57600"/>
+  <arg name="comm_port"                 default="/dev/ttyUSB0:115200"/>
   <arg name="total_mass"                default="0.95"/>
   <arg name="thrust_scaler" 		        default="200.0"/>
 

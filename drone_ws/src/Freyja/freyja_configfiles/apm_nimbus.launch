@@ -3,7 +3,7 @@
 	<!-- Launch script for ArduPilotMega based FCU's -->
 	<!-- Customised for NimbusLab indoor flights. ~aj -->
 
-	<arg name="fcu_url" default="/dev/ttyUSB0:57600" />
+	<arg name="fcu_url" default="/dev/ttyUSB0:115200" />
 	<!--arg name="fcu_url" default="/dev/ttyUSB0:115200" /-->
 	<arg name="gcs_url" default="" />
 	<arg name="tgt_system" default="1" />

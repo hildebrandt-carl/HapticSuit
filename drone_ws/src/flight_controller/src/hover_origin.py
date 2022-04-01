@@ -96,17 +96,12 @@ class FlightPathControllerNode:
         counter = -self.rate * 5
         x_pos = 0
         y_pos = 0
-        z_pos = 0.01
+        z_pos = self.hover_height
 
         while not self._quit:
         
             # Send the waypoint
             self._send_waypoint(x=x_pos, y=y_pos, z=z_pos)
-
-            # Gradually increase the z pos until you reach 1
-            if counter > 0:
-                z_pos += 0.1 / self.rate
-                z_pos = min(z_pos, self.hover_height)
 
             # This just helps wait 10 seconds
             counter += 1
