@@ -20,6 +20,7 @@ parser.add_argument('--shuffle',            action='store_true')
 args = parser.parse_args()
 
 # Get the user arguements
+print("Get the user arguements")
 data_resolution = args.data_resolution
 shuffle_data = args.shuffle
 batch_size = args.batch_size
@@ -27,6 +28,7 @@ model_definition = args.model
 directory = args.directory
 
 # Create the file name for saving
+print("Create the file name for saving")
 timestr     = time.strftime("%Y%m%d-%H%M%S")
 randomstr   = ""
 randomchr   = random.choices(string.ascii_lowercase, k=5)
@@ -42,12 +44,14 @@ if not os.path.exists("{}/models".format(directory)):
     os.makedirs("{}/models".format(directory))  
 
 # load the dataset
+print("Load the dataset")
 input_training_data = np.loadtxt('{}/data/training_input_{}.csv'.format(directory, data_resolution), delimiter=',')
 output_training_data = np.loadtxt('{}/data/training_output_{}.csv'.format(directory, data_resolution), delimiter=',')
 input_validation_data = np.loadtxt('{}/data/validation_input_{}.csv'.format(directory, data_resolution), delimiter=',')
 output_validation_data = np.loadtxt('{}/data/validation_output_{}.csv'.format(directory, data_resolution), delimiter=',')
 
 # define the keras model
+print("Create the model")
 model = Sequential()
 layer_def = model_definition.split(",")
 first_layer = True
@@ -62,6 +66,7 @@ for layer_size in layer_def:
 model.add(Dense(3))
 
 # compile the keras model
+print("Compile the model")
 model.compile(loss='mean_squared_error',
               optimizer='adam',
               metrics=['accuracy'])
@@ -79,6 +84,7 @@ bestmodel = ModelCheckpoint(filepath="{}/models/{}.h5".format(directory, filenam
                             mode='min')
 
 # fit the keras model on the dataset
+print("Train the model")
 history = model.fit(input_training_data, output_training_data,
                     epochs=5000,
                     batch_size=batch_size,
@@ -118,3 +124,4 @@ with open('{}/results/{}.txt'.format(directory, filename), 'w') as f:
     f.write('Final Training Loss: {}\n'.format(train_loss))
     f.write('Final Validation Accuracy: {}\n'.format(val_accuracy))
     f.write('Final Validation Loss: {}\n'.format(val_loss))
+
