@@ -3,12 +3,14 @@ import numpy as np
 
 from keras.models import load_model
 
+direction = "inverse"
+
 # Get all models
-model_files = glob.glob("./models/*.h5")
+model_files = glob.glob("./models/{}/*.h5".format(direction))
 
 # Load the data
-input_data = np.loadtxt('./data/forward/testing_input_10.csv', delimiter=',')
-output_data = np.loadtxt('./data/forward/testing_output_10.csv', delimiter=',')
+input_data = np.loadtxt('./data/{}/testing_input_10.csv'.format(direction), delimiter=',')
+output_data = np.loadtxt('./data/{}/testing_output_10.csv'.format(direction), delimiter=',')
 
 lowest_loss         = np.inf
 lowest_loss_model   = None

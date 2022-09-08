@@ -11,14 +11,14 @@ ky = 2
 km = 3
 
 # Motor parameters
-w       = np.array([1,1,1,1])
+# w       = np.array([1,1,1,1])
 # w       = np.array([2,2,1,1])
-# w       = np.array([2,1,1,1])
-theta   = np.array([0, 0, 0, 0])
+w       = np.array([0,1,0,1])
+# theta   = np.array([0, 0, 0, 0])
 # theta   = np.array([180, 180, 0, 0])
 # theta   = np.array([180, 180, 180, 180])
 # theta   = np.array([-45, 45, 0, 0])
-# theta   = np.array([45, -45, 0, 0])
+theta   = np.array([0, 0, 0, 0])
 # theta   = np.array([0, 90, 0, 0])
 # theta   = np.array([90, 90, 90, 90])
 # theta   = np.array([-90, 90, -90, 90])
@@ -83,6 +83,9 @@ Tz += Tz1 + Tz2 + Tz3 + Tz4
 Tx += (Fz1 - Fz2) + (Fy1 - Fy2)
 Ty += (Fz3 - Fz4) + (Fx3 - Fx4)
 Tz += (Fx1 - Fx2) + (Fy3 - Fy4)
+
+print("Fx: {}     Fy: {}    Fz: {}".format(Fx, Fy, Fz))
+print("Tx: {}     Ty: {}    Tz: {}".format(Tx, Ty, Tz))
 
 # Plot lateral forces
 main        = np.array([[0, 0, 0, Fx, Fy, Fz]])
