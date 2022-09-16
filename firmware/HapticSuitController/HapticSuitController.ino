@@ -245,7 +245,7 @@ void loop()
 
       // Send a reply
       Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
-      Udp.write("Command Accepted");
+      Udp.write("Command Accepted\n");
       // Udp.write("Roll Setpoint (" + String(roll_setpoint[0]) + ", " + String(roll_setpoint[1]) + ")");
       // Udp.write("Motor Speed (" + String(motor_throttle[0]) + ", " + String(motor_throttle[1]) + ")");
       Udp.endPacket();
@@ -271,7 +271,7 @@ void loop()
   {
     // Compute the roll output
     float motor_power = pid[k].get_output(roll_setpoint[k], global_roll[k]);
-    Serial.println("Motor " + String(k) + " power: " + String(motor_power));
+    // Serial.println("Motor " + String(k) + " power: " + String(motor_power));
 
     // Get the sign of the motor_power
     int motor_direction = (motor_power > 0) - (motor_power < 0);
@@ -307,9 +307,9 @@ void loop()
     ;
   }
 
-  Serial.println("Motor0: " + String(roll_setpoint[0]) + "/" + String(global_roll[0]) +
-                 "\nMotor1: " + String(roll_setpoint[1]) + "/" + String(global_roll[1]));
-  Serial.println("---------------------");
+  // Serial.println("Motor0: " + String(roll_setpoint[0]) + "/" + String(global_roll[0]) +
+  //                "\nMotor1: " + String(roll_setpoint[1]) + "/" + String(global_roll[1]));
+  // Serial.println("---------------------");
 }
 
 void printWiFiStatus() 
