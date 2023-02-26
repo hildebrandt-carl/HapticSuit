@@ -3,7 +3,7 @@
 Robots operate under certain forces that affect their behavior. For example, a drone meant to deliver packages must hold its pose as long as it operates under its weight and wind limits. Validating that such a drone handles external forces correctly is key to ensuring its safety. Nevertheless, validating the system's behavior under the effect of such forces can be difficult and costly. For example, checking the effects of different wind magnitudes may require waiting for the matching outdoor conditions or building specialized devices like wind tunnels. Checking the effects of different package sizes and shapes may require many slow and laborious iterations, and validating the combinations of wind gusts and package configurations is often hard to replicate. This work introduces a framework to overcome such challenges by mimicking external forces exercised on a drone with limited cost, setup, and space. The framework consists of a haptic suit device consisting of directional propellers that can be mounted onto a drone, a component to transform intended forces into setpoints for the suit's directional propellers, and a controller for the suit to meet those setpoints. We conduct a study to assess the framework's capabilities under multiple scenarios involving various forces. Our findings show that the haptic suit framework can recreate real-world forces on the drone with acceptable precision.
 
 
-![Overview Video](https://www.youtube.com/watch?v=5_QmRLWMhes)
+<iframe width="560" height="315" src="https://www.youtube.com/embed/5_QmRLWMhes" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@ This software was developed, run and test on the following machines.
 
 ### Software
 
-We require that you have [ROS Noetic](http://wiki.ros.org/noetic/Installation) to operate the drone. We require that you use the [Arduino IDE](https://www.arduino.cc/en/software) for flashing the haptic suit controllers. Finally we require that you have [SOLIDWORKS](https://www.solidworks.com) and a 3D printer for printing the arms of the haptic suit. Finally we require that you have (Matlab)[https://www.mathworks.com/products/matlab.html] for computing the inverse kinematics.
+We require that you have [ROS Noetic](http://wiki.ros.org/noetic/Installation) to operate the drone. We require that you use the [Arduino IDE](https://www.arduino.cc/en/software) for flashing the haptic suit controllers. Finally we require that you have [SOLIDWORKS](https://www.solidworks.com) and a 3D printer for printing the arms of the haptic suit. Finally we require that you have [Matlab](https://www.mathworks.com/products/matlab.html) for computing the inverse kinematics.
 
 ## Getting Started
 
