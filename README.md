@@ -27,3 +27,4 @@ We require that you have [ROS Noetic](http://wiki.ros.org/noetic/Installation) t
 | Physical Design       | This includes the designs for the physical arms, battery holders, and pendulum used in our study.            	| [README.MD](./physical_design/README.md)  |
 | Drone Workspace      	| This has the software used to fly the drone in each of the scenarios listed in the paper.                   	| [README.MD](./drone_ws/README.md)         |
 | Firmware            	| This describes how to flash the firmware used by the haptic suit                                              | [README.MD](./firmware/README.md)    	    |
+| Paper            	    | Includes the paper published published at [ICRA 2023](https://www.icra2023.org)                               | [README.MD](./paper/HapticSuit.pdf)    	    |
